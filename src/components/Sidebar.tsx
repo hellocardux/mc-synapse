@@ -1,9 +1,13 @@
-import { type DragEvent } from 'react';
+import { useState, type DragEvent } from 'react';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { Guidance } from './Guidance';
+import { Button } from './ui/button';
+import { MessageSquare } from 'lucide-react';
+import { FeedbackModal } from './FeedbackModal';
 
 export function Sidebar() {
     const { t } = useLanguageStore();
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
     const onDragStart = (event: DragEvent, nodeType: string) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
@@ -41,10 +45,32 @@ export function Sidebar() {
 
             <div className="mt-auto flex flex-col gap-4">
                 <Guidance />
-                <div className="text-xs text-muted-foreground text-center">
-                    Credits: <a href="https://cardux.it" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">cardux.it</a>
+
+                <div className="pt-4 border-t border-border flex flex-col gap-3">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full justify-center gap-2 text-muted-foreground hover:text-primary"
+                        onClick={() => setIsFeedbackOpen(true)}
+                    >
+                        <MessageSquare className="h-4 w-4" />
+                        {t.feedback.trigger}
+                    </Button>
+
+                    <div className="text-xs text-muted-foreground text-center">
+                        <a
+                            href="https://cardux.it"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-primary transition-colors"
+                        >
+                            {t.feedback.copyright}
+                        </a>
+                    </div>
                 </div>
             </div>
+
+            <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
         </aside>
     );
 }

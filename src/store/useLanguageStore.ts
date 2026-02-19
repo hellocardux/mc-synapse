@@ -124,6 +124,21 @@ const en = {
         description: "For the best experience, this tool is designed for desktop use, fullscreen. Please open it on your computer.",
         button: "Visit cardux.it",
     },
+    feedback: {
+        trigger: "Feedback",
+        title: "Send Feedback",
+        subtitle: "Have suggestions or found a bug?",
+        name: "Name",
+        namePlaceholder: "Your name",
+        email: "Email (Optional)",
+        emailPlaceholder: "your@email.com",
+        message: "Message",
+        messagePlaceholder: "Write your message here...",
+        submit: "Send Feedback",
+        success: "Feedback sent!",
+        error: "Error sending feedback.",
+        copyright: "© 2026 cardux.it",
+    },
 };
 
 // Italian Dictionary
@@ -246,6 +261,21 @@ const it: typeof en = {
         title: "Esperienza Ottimizzata per Desktop",
         description: "Per un'esperienza ottimale, questo strumento è progettato per l'uso su desktop a tutto schermo. Ti invitiamo ad aprirlo dal tuo computer.",
         button: "Visita cardux.it",
+    },
+    feedback: {
+        trigger: "Feedback",
+        title: "Invia Feedback",
+        subtitle: "Hai suggerimenti o hai trovato un bug?",
+        name: "Nome",
+        namePlaceholder: "Il tuo nome",
+        email: "Email (Facoltativo)",
+        emailPlaceholder: "tua@email.com",
+        message: "Messaggio",
+        messagePlaceholder: "Scrivi qui il tuo messaggio...",
+        submit: "Invia Feedback",
+        success: "Feedback inviato!",
+        error: "Errore nell'invio.",
+        copyright: "© 2026 cardux.it",
     },
 };
 
