@@ -119,6 +119,11 @@ const en = {
         description: "Add or remove roles available for assignment in the RACI matrix.",
         placeholder: "New Role Name",
     },
+    mobileWarning: {
+        title: "Desktop Experience Recommended",
+        description: "For the best experience, this tool is designed for desktop use, fullscreen. Please open it on your computer.",
+        button: "Visit cardux.it",
+    },
 };
 
 // Italian Dictionary
@@ -237,6 +242,11 @@ const it: typeof en = {
         description: "Aggiungi o rimuovi ruoli disponibili per l'assegnazione nella matrice RACI.",
         placeholder: "Nome Nuovo Ruolo",
     },
+    mobileWarning: {
+        title: "Esperienza Ottimizzata per Desktop",
+        description: "Per un'esperienza ottimale, questo strumento è progettato per l'uso su desktop a tutto schermo. Ti invitiamo ad aprirlo dal tuo computer.",
+        button: "Visita cardux.it",
+    },
 };
 
 interface LanguageState {
@@ -246,7 +256,7 @@ interface LanguageState {
 }
 
 export const useLanguageStore = create<LanguageState>((set) => ({
-    language: 'it', // Defaulting to Italian as requested by user ("scrivila anche in inglese... aggiungi bottone")
+    language: 'it', // Defaulting to Italian
     t: it,
     setLanguage: (lang) => set({
         language: lang,

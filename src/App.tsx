@@ -18,6 +18,7 @@ import { PropertiesPanel } from './components/PropertiesPanel';
 import { Header } from './components/Header';
 import { SipocTable } from './components/SipocTable';
 import { Documentation } from './components/Documentation';
+import { MobileWarning } from './components/MobileWarning';
 
 const nodeTypes: NodeTypes = {
   task: TaskNode,
@@ -112,6 +113,7 @@ function Flow() {
 function App() {
   return (
     <ReactFlowProvider>
+      <MobileWarning />
       <Flow />
     </ReactFlowProvider>
   );
