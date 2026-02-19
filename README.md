@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
+# 🧠 MC Synapse
+### Local-First Process Intelligence & RACI Mapping
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**MC Synapse** is a powerful, browser-based tool for mapping, analyzing, and governing business processes. Built with a "Local-First" philosophy, it ensures your data never leaves your device unless you choose to share it.
 
-Currently, two official plugins are available:
+![MC Synapse](https://img.shields.io/badge/Status-Stable-green) ![License](https://img.shields.io/badge/License-MIT-blue) ![Technology](https://img.shields.io/badge/Built%20With-React%20%7C%20Vite%20%7C%20ReactFlow-61DAFB)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Key Features
 
-## React Compiler
+### 1. 🛂 Process Passport (Governance)
+Define the core utility of your process before you start mapping.
+- **ISO 9001 Compliance**: detailed inputs for Process Owner, Purpose, Triggers, and Outputs.
+- **Risk & KPI Definition**: Clearly identify success metrics and potential pitfalls.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 2. 📋 SIPOC Analysis
+High-level scoping tool to identify:
+- **S**uppliers
+- **I**nputs
+- **P**rocess (Macro steps)
+- **O**utputs
+- **C**ustomers
 
-## Expanding the ESLint configuration
+### 3. 🎨 Interactive Flow Mapping
+- **Drag & Drop Interface**: Easily creating flowcharts with Tasks, Decisions, and Start/End nodes.
+- **Smart Connections**: Intuitive linking between steps.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 4. 👥 Integrated RACI Matrix
+- **Role Management**: Define custom roles for your organization.
+- **Granular Assignment**: Assign **R**esponsible, **A**ccountable, **C**onsulted, and **I**nformed status to every single task directly from the properties panel.
+- **Visual Feedback**: See assigned roles directly on the canvas.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 5. 🚦 Process Indicators
+Tag your process steps with visual markers:
+- 🔴 **Risk Points**
+- 🔵 **Controls**
+- 🟢 **KPIs**
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🔒 Local-First & Privacy
+**Your data is yours.**
+- MC Synapse runs entirely in your browser.
+- No data is sent to the cloud.
+- **Save/Load**: Projects are saved as `.json` files locally on your machine.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🛠️ Tech Stack
+- **Framework**: React + Vite
+- **Diagramming**: React Flow
+- **Styling**: Tailwind CSS + Shadcn/UI
+- **State Management**: Zustand
+- **Icons**: Lucide React
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Prerequisites
+- Node.js (v18 or higher)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/hellocardux/mc-synapse.git
+   ```
+2. Navigate to the project folder:
+   ```bash
+   cd mc-synapse
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## 📄 License
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+**Credits**: [cardux.it](https://cardux.it)
