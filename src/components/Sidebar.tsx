@@ -1,13 +1,11 @@
-import { useState, type DragEvent } from 'react';
+import { type DragEvent } from 'react';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { Guidance } from './Guidance';
 import { Button } from './ui/button';
 import { MessageSquare } from 'lucide-react';
-import { FeedbackModal } from './FeedbackModal';
 
 export function Sidebar() {
     const { t } = useLanguageStore();
-    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
     const onDragStart = (event: DragEvent, nodeType: string) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
@@ -47,15 +45,16 @@ export function Sidebar() {
                 <Guidance />
 
                 <div className="pt-4 border-t border-border flex flex-col gap-3">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-center gap-2 text-muted-foreground hover:text-primary"
-                        onClick={() => setIsFeedbackOpen(true)}
-                    >
-                        <MessageSquare className="h-4 w-4" />
-                        {t.feedback.trigger}
-                    </Button>
+                    <a href="mailto:hello@cardux.it?subject=MC%20Synapse%20Feedback">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full justify-center gap-2 text-muted-foreground hover:text-primary"
+                        >
+                            <MessageSquare className="h-4 w-4" />
+                            {t.feedback.trigger}
+                        </Button>
+                    </a>
 
                     <div className="text-xs text-muted-foreground text-center">
                         <a
@@ -69,8 +68,6 @@ export function Sidebar() {
                     </div>
                 </div>
             </div>
-
-            <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
         </aside>
     );
 }
