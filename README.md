@@ -76,4 +76,4 @@ Tag your process steps with visual markers:
 This project is open source and available under the [MIT License](LICENSE).
 
 ---
-**Credits**: [cardux.it](https://cardux.it)
+**Credits**: Massimo Cardolicchio - [cardux.it](https://cardux.it)
