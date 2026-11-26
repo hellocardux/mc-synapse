@@ -1,73 +1,39 @@
-import { type DragEvent } from 'react';
+import { Diamond, PanelRight, RectangleHorizontal, Square, type LucideIcon } from 'lucide-react';
+import { type ProcessNodeType } from '../lib/project';
 import { useLanguageStore } from '../store/useLanguageStore';
-import { Guidance } from './Guidance';
 import { Button } from './ui/button';
-import { MessageSquare } from 'lucide-react';
 
-export function Sidebar() {
+interface MapToolbarProps {
+    add: (type: ProcessNodeType) => void;
+    showProperties: boolean;
+    toggleProperties: () => void;
+}
+
+const shapeOptions: { type: ProcessNodeType; icon: LucideIcon; label: 'activity' | 'decision' | 'startEnd' }[] = [
+    { type: 'task', icon: Square, label: 'activity' },
+    { type: 'decision', icon: Diamond, label: 'decision' },
+    { type: 'start-end', icon: RectangleHorizontal, label: 'startEnd' },
+];
+
+export function MapToolbar({ add, showProperties, toggleProperties }: MapToolbarProps) {
     const { t } = useLanguageStore();
-
-    const onDragStart = (event: DragEvent, nodeType: string) => {
-        event.dataTransfer.setData('application/reactflow', nodeType);
-        event.dataTransfer.effectAllowed = 'move';
-    };
-
     return (
-        <aside className="w-64 bg-secondary p-4 border-r border-border shadow-md flex flex-col gap-4">
-            <h2 className="text-lg font-bold">{t.sidebar.shapes}</h2>
-            <div className="font-medium text-sm text-muted-foreground mb-2">{t.sidebar.drag}</div>
-
-            <div
-                className="p-3 bg-white border border-stone-400 rounded cursor-move flex items-center justify-center shadow-sm hover:ring-2 hover:ring-primary/20 transition-all"
-                onDragStart={(event) => onDragStart(event, 'task')}
-                draggable
-            >
-                {t.sidebar.task}
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b bg-card px-3 py-2 lg:px-5">
+            <div className="flex items-center gap-1.5" role="group" aria-label={t.sidebar.shapes}>
+                {shapeOptions.map(({ type, icon: Icon, label }) => (
+                    <Button key={type} variant="outline" className="gap-1.5 px-2.5" draggable
+                        onClick={() => add(type)}
+                        onDragStart={(event) => {
+                            event.dataTransfer.setData('application/reactflow', type);
+                            event.dataTransfer.effectAllowed = 'move';
+                        }}>
+                        <Icon size={15} />{t.editor[label]}
+                    </Button>
+                ))}
             </div>
-
-            <div
-                className="p-3 bg-white border border-stone-400 transform rotate-45 w-16 h-16 mx-auto cursor-move flex items-center justify-center shadow-sm hover:ring-2 hover:ring-primary/20 transition-all mb-4 mt-2"
-                onDragStart={(event) => onDragStart(event, 'decision')}
-                draggable
-            >
-                <span className="transform -rotate-45 text-xs">{t.sidebar.decision}</span>
-            </div>
-
-            <div
-                className="p-3 bg-white border border-stone-400 rounded-full cursor-move flex items-center justify-center shadow-sm hover:ring-2 hover:ring-primary/20 transition-all"
-                onDragStart={(event) => onDragStart(event, 'start-end')}
-                draggable
-            >
-                {t.sidebar.startEnd}
-            </div>
-
-            <div className="mt-auto flex flex-col gap-4">
-                <Guidance />
-
-                <div className="pt-4 border-t border-border flex flex-col gap-3">
-                    <a href="mailto:hello@cardux.it?subject=MC%20Synapse%20Feedback">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="w-full justify-center gap-2 text-muted-foreground hover:text-primary"
-                        >
-                            <MessageSquare className="h-4 w-4" />
-                            {t.feedback.trigger}
-                        </Button>
-                    </a>
-
-                    <div className="text-xs text-muted-foreground text-center">
-                        <a
-                            href="https://cardux.it"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:text-primary transition-colors"
-                        >
-                            {t.feedback.copyright}
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </aside>
+            <Button variant={showProperties ? 'secondary' : 'ghost'} className="gap-2" aria-pressed={showProperties} onClick={toggleProperties}>
+                <PanelRight size={16} />{t.editor.properties}
+            </Button>
+        </div>
     );
 }

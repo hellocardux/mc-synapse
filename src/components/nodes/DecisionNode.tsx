@@ -1,33 +1,28 @@
-import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { Handle, Position, useStore, type NodeProps } from '@xyflow/react';
+import { useLanguageStore } from '../../store/useLanguageStore';
 
-export function DecisionNode({ data }: NodeProps) {
+const handles = [
+    { side: Position.Top, visible: 'target' },
+    { side: Position.Right, visible: 'source' },
+    { side: Position.Bottom, visible: 'source' },
+    { side: Position.Left, visible: 'source' },
+] as const;
+
+export function DecisionNode({ data, selected }: NodeProps) {
+    const { t } = useLanguageStore();
+    const fromType = useStore((state) => state.connectionClickStartHandle?.type ?? state.connection.fromHandle?.type);
+    const requestedType = fromType === 'source' ? 'target' : fromType === 'target' ? 'source' : undefined;
     return (
-        <div className="w-20 h-20 relative flex items-center justify-center">
-            {/* Rotated Diamond Shape */}
-            <div className="w-14 h-14 bg-card border-2 border-primary transform rotate-45 shadow-sm absolute z-0" />
-
-            {/* Label (Not rotated, on top) */}
-            <div className="relative z-10 text-xs text-center p-1 font-semibold max-w-[80px] break-words pointer-events-none">
-                {data.label as string}
+        <div className="relative grid min-h-[104px] w-[104px] place-items-center py-8">
+            <div className={'absolute inset-0 decision-border ' + (selected ? 'bg-primary' : 'bg-slate-500')} />
+            <div className="decision-border absolute inset-[2px] bg-teal-50" />
+            <div className="pointer-events-none relative max-w-[72px] break-words text-center text-xs font-semibold">
+                {String(data.label) || t.editor.decision}
             </div>
-
-            {/* Handles - Omni-directional (Both Source and Target at each position) */}
-
-            {/* Top */}
-            <Handle type="target" position={Position.Top} id="top-target" className="w-3 h-3 bg-secondary-foreground border-2 border-background" style={{ top: 0, left: '50%', transform: 'translate(-50%, -50%)' }} />
-            <Handle type="source" position={Position.Top} id="top-source" className="w-3 h-3 bg-secondary-foreground border-2 border-background opacity-0" style={{ top: 0, left: '50%', transform: 'translate(-50%, -50%)' }} />
-
-            {/* Right */}
-            <Handle type="source" position={Position.Right} id="right-source" className="w-3 h-3 bg-secondary-foreground border-2 border-background" style={{ top: '50%', right: 0, transform: 'translate(50%, -50%)' }} />
-            <Handle type="target" position={Position.Right} id="right-target" className="w-3 h-3 bg-secondary-foreground border-2 border-background opacity-0" style={{ top: '50%', right: 0, transform: 'translate(50%, -50%)' }} />
-
-            {/* Bottom */}
-            <Handle type="source" position={Position.Bottom} id="bottom-source" className="w-3 h-3 bg-secondary-foreground border-2 border-background" style={{ bottom: 0, left: '50%', transform: 'translate(-50%, 50%)' }} />
-            <Handle type="target" position={Position.Bottom} id="bottom-target" className="w-3 h-3 bg-secondary-foreground border-2 border-background opacity-0" style={{ bottom: 0, left: '50%', transform: 'translate(-50%, 50%)' }} />
-
-            {/* Left */}
-            <Handle type="target" position={Position.Left} id="left-target" className="w-3 h-3 bg-secondary-foreground border-2 border-background" style={{ top: '50%', left: 0, transform: 'translate(-50%, -50%)' }} />
-            <Handle type="source" position={Position.Left} id="left-source" className="w-3 h-3 bg-secondary-foreground border-2 border-background opacity-0" style={{ top: '50%', left: 0, transform: 'translate(-50%, -50%)' }} />
+            {handles.flatMap(({ side, visible }) => (['target', 'source'] as const).map((type) => (
+                <Handle key={side + type} type={type} position={side} id={side + '-' + type}
+                    className={type === (requestedType ?? visible) ? '' : 'decision-handle-inactive opacity-0'} />
+            )))}
         </div>
     );
 }

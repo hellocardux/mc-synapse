@@ -9,8 +9,8 @@
 
 ### 1. 🛂 Process Passport (Governance)
 Define the core utility of your process before you start mapping.
-- **ISO 9001 Compliance**: detailed inputs for Process Owner, Purpose, Triggers, and Outputs.
-- **Risk & KPI Definition**: Clearly identify success metrics and potential pitfalls.
+- **Process definition**: Record the owner, purpose, triggers, and outputs in the Overview.
+- **Risks and KPIs**: Record process risks and success measures in separate fields.
 
 ### 2. 📋 SIPOC Analysis
 High-level scoping tool to identify:
@@ -27,7 +27,7 @@ High-level scoping tool to identify:
 ### 4. 👥 Integrated RACI Matrix
 - **Role Management**: Define custom roles for your organization.
 - **Granular Assignment**: Assign **R**esponsible, **A**ccountable, **C**onsulted, and **I**nformed status to every single task directly from the properties panel.
-- **Visual Feedback**: See assigned roles directly on the canvas.
+- **Review and export**: Edit assignments in the RACI table, filter for activities that need an Accountable, and export the matrix to Excel.
 
 ### 5. 🚦 Process Indicators
 Tag your process steps with visual markers:
@@ -39,7 +39,9 @@ Tag your process steps with visual markers:
 **Your data is yours.**
 - MC Synapse runs entirely in your browser.
 - No data is sent to the cloud.
-- **Save/Load**: Projects are saved as `.json` files locally on your machine.
+- **Draft**: The current project is saved in this browser and restored on return.
+- **Portable copy**: Export an editable `.json` file and reopen it with **Open**. Files from the original editor are supported.
+- **Process Book**: Download a PDF with the passport, SIPOC, map, and RACI matrix.
 
 ## 🛠️ Tech Stack
 - **Framework**: React + Vite
@@ -51,7 +53,7 @@ Tag your process steps with visual markers:
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js (v18 or higher)
+- Node.js 20.19+ or 22.12+
 
 ### Installation
 

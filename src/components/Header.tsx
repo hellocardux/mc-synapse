@@ -1,84 +1,81 @@
-import { useProjectStore } from '../store/useProjectStore';
-import { useLanguageStore } from '../store/useLanguageStore'; // Import language store
-import { Input } from './ui/input';
+import { AlertCircle, BookOpen, CircleCheck, HardDrive, Languages, MessageSquare } from 'lucide-react';
+import { useProjectStore, type AppView } from '../store/useProjectStore';
+import { useLanguageStore } from '../store/useLanguageStore';
+import type { ProjectData } from '../lib/project';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
 import { Toolbar } from './Toolbar';
-import { RoleManager } from './RoleManager';
-import { ProcessPassport } from './ProcessPassport';
-import { Languages } from 'lucide-react';
 
-export function Header() {
-    const projectName = useProjectStore((state) => state.meta.projectName);
-    const setProjectName = useProjectStore((state) => state.setProjectName);
-
+export function Header({ openProject }: { openProject: (project: ProjectData) => void }) {
+    const title = useProjectStore((state) => state.meta.projectName);
+    const setProjectMeta = useProjectStore((state) => state.setProjectMeta);
+    const currentView = useProjectStore((state) => state.currentView);
+    const setView = useProjectStore((state) => state.setView);
+    const draftStatus = useProjectStore((state) => state.draftStatus);
     const { t, language, setLanguage } = useLanguageStore();
-
-    const toggleLanguage = () => {
-        setLanguage(language === 'en' ? 'it' : 'en');
-    };
+    const copy = t.editor;
+    const views: { id: AppView; label: string }[] = [
+        { id: 'overview', label: copy.overview },
+        { id: 'sipoc', label: t.header.sipoc },
+        { id: 'diagram', label: t.header.map },
+        { id: 'raci', label: 'RACI' },
+    ];
+    const warning = draftStatus !== 'ready' && draftStatus !== 'saved';
+    const DraftIcon = warning ? AlertCircle : draftStatus === 'saved' ? CircleCheck : HardDrive;
 
     return (
-        <header className="h-16 border-b border-border bg-card px-6 flex items-center justify-between shadow-sm z-20 relative">
-            <div className="flex items-center gap-3">
-                <div className="text-3xl select-none">
-                    🧠
+        <header className="relative z-10 shrink-0 border-b bg-card">
+            <div className="flex min-h-16 items-center gap-4 border-b border-border/70 px-4 lg:px-6">
+                <div className="flex shrink-0 items-center gap-2.5">
+                    <img src={import.meta.env.BASE_URL + 'favicon.png'} alt="" className="size-8 object-contain" />
+                    <span className="text-base font-semibold tracking-tight">MC Synapse</span>
                 </div>
-                <div className="flex flex-col justify-center mr-4">
-                    <div className="font-bold text-lg tracking-tight leading-none">MC Synapse</div>
-                    <div className="text-[10px] text-muted-foreground font-medium leading-tight mt-0.5">{t.header.subtitle}</div>
+                <div className="min-w-0 flex-1 border-l pl-3 lg:pl-4">
+                    <Input
+                        aria-label={copy.project}
+                        placeholder={copy.untitled}
+                        className="max-w-96 border-transparent bg-transparent font-semibold shadow-none hover:border-input focus-visible:border-input"
+                        value={title}
+                        onChange={(event) => setProjectMeta({ projectName: event.target.value })}
+                    />
                 </div>
-                <Input
-                    className="w-48 h-8 bg-background"
-                    placeholder={t.header.projectPlaceholder}
-                    value={projectName}
-                    onChange={(e) => setProjectName(e.target.value)}
-                />
+                <Toolbar openProject={openProject} />
             </div>
-
-            <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" onClick={toggleLanguage} title={language === 'en' ? "Switch to Italian" : "Switch to English"}>
-                    <Languages className="h-4 w-4" />
-                    <span className="sr-only">Toggle Language</span>
-                </Button>
-
-                <ProcessPassport />
-                <div className="w-px h-8 bg-border bg-opacity-50" />
-                <RoleManager />
-                <div className="w-px h-8 bg-border bg-opacity-50" />
-
-                {/* View Toggle */}
-                <div className="flex bg-muted p-1 rounded-md">
-                    <Button
-                        variant={useProjectStore(s => s.currentView) === 'diagram' ? 'secondary' : 'ghost'}
-                        size="sm"
-                        onClick={() => useProjectStore.getState().setView('diagram')}
-                        className="h-7"
-                    >
-                        {t.header.map}
+            <div className="flex items-center justify-between gap-1 px-4 lg:px-6">
+                <nav className="flex shrink-0 gap-0.5" aria-label={copy.views}>
+                    {views.map(({ id, label }) => (
+                        <button
+                            type="button"
+                            key={id}
+                            onClick={() => setView(id)}
+                            aria-current={currentView === id ? 'page' : undefined}
+                            className={'border-b-2 px-3 py-3 text-sm font-medium transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring '
+                                + (currentView === id ? 'border-primary text-primary' : 'border-transparent text-muted-foreground')}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                </nav>
+                <div className="flex min-w-0 items-center gap-1.5 lg:gap-2">
+                    <span role="status" className={'flex min-w-0 items-center gap-1.5 px-2 text-xs ' + (warning ? 'text-destructive' : 'text-muted-foreground')}>
+                        <DraftIcon size={15} className="shrink-0" /><span>{copy[draftStatus]}</span>
+                    </span>
+                    <Button size="icon" variant={currentView === 'docs' ? 'secondary' : 'ghost'} aria-label={t.header.guide} title={t.header.guide} onClick={() => setView('docs')}>
+                        <BookOpen size={17} />
                     </Button>
-                    <Button
-                        variant={useProjectStore(s => s.currentView) === 'sipoc' ? 'secondary' : 'ghost'}
-                        size="sm"
-                        onClick={() => useProjectStore.getState().setView('sipoc')}
-                        className="h-7"
-                    >
-                        {t.header.sipoc}
+                    <Button asChild size="icon" variant="ghost">
+                        <a href="mailto:hello@cardux.it?subject=MC%20Synapse%20Feedback" aria-label={t.feedback.trigger} title={t.feedback.trigger}><MessageSquare size={17} /></a>
                     </Button>
-                    <div className="w-px h-4 bg-border mx-1" />
-                    <Button
-                        variant={useProjectStore(s => s.currentView) === 'docs' ? 'secondary' : 'ghost'}
-                        size="sm"
-                        onClick={() => useProjectStore.getState().setView('docs')}
-                        className="h-7"
-                    >
-                        {t.header.guide}
+                    <Button size="icon" variant="ghost" aria-label={copy.language} title={copy.language} onClick={() => setLanguage(language === 'en' ? 'it' : 'en')}>
+                        <Languages size={17} />
                     </Button>
                 </div>
-
-                <div className="w-px h-8 bg-border bg-opacity-50" />
-                {/* Toolbar moved here for better layout */}
-                <Toolbar />
             </div>
+            {warning && (
+                <p className="border-t bg-red-50 px-4 py-2 text-sm text-red-800 lg:px-6">
+                    {draftStatus === 'conflict' ? copy.saveConflict : copy.saveUnavailable}
+                </p>
+            )}
         </header>
     );
 }
