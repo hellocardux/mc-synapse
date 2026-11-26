@@ -1,4 +1,5 @@
-import { X } from 'lucide-react';
+import type { Edge, Node } from '@xyflow/react';
+import { Trash2, X } from 'lucide-react';
 import { useProjectStore } from '../store/useProjectStore';
 import { useLanguageStore } from '../store/useLanguageStore';
 import { raciKeys } from '../lib/project';
@@ -8,11 +9,23 @@ import { Label } from './ui/label';
 import { RaciAssignment } from './RaciAssignment';
 import { RoleManager } from './RoleManager';
 
-export function PropertiesPanel({ close }: { close: () => void }) {
+interface PropertiesPanelProps {
+    selectedNodes: Node[];
+    selectedEdges: Edge[];
+    close: () => void;
+    deleteSelection: () => void;
+}
+
+export function PropertiesPanel({ selectedNodes, selectedEdges, close, deleteSelection }: PropertiesPanelProps) {
     const { t } = useLanguageStore();
     const state = useProjectStore();
-    const node = state.nodes.find((item) => item.selected);
-    const edge = state.edges.find((item) => item.selected);
+    const count = selectedNodes.length + selectedEdges.length;
+    const node = count === 1 ? selectedNodes[0] : undefined;
+    const edge = count === 1 ? selectedEdges[0] : undefined;
+    const nodeHeading = node?.type === 'task' ? t.editor.activity
+        : node?.type === 'decision' ? t.editor.decision : t.editor.startEnd;
+    const deleteLabel = node ? t.editor.deleteNode : edge ? t.editor.deleteEdge : t.editor.deleteSelection;
+    const nodeLabel = (id: string) => String(state.nodes.find((item) => item.id === id)?.data.label || t.editor.unnamedNode);
     const task = node?.type === 'task';
     const tags = node?.data.tags as string[] | undefined ?? [];
     const labels = [t.properties.r, t.properties.a, t.properties.c, t.properties.i];
@@ -20,11 +33,21 @@ export function PropertiesPanel({ close }: { close: () => void }) {
     return (
         <aside aria-label={t.editor.properties} className="w-64 shrink-0 overflow-y-auto border-l bg-card px-4 pb-5 lg:w-72 lg:px-5">
             <div className="sticky top-0 z-10 mb-3 flex items-center justify-between gap-2 border-b bg-card py-2">
-                <h2 className="font-semibold">{edge ? t.editor.edge : t.editor.properties}</h2>
+                <h2 className="font-semibold">{edge ? t.editor.edge : node ? nodeHeading : t.editor.properties}</h2>
                 <Button size="icon" variant="ghost" onClick={close} aria-label={t.editor.close} title={t.editor.close}><X size={16} /></Button>
             </div>
+            {count > 0 && (
+                <div className="mb-4">
+                    {count > 1 && <p className="mb-2 text-sm text-muted-foreground">{t.editor.selectedCount(count)}</p>}
+                    <Button variant="outline" className="gap-2 border-destructive/25 text-destructive hover:bg-red-50 hover:text-destructive"
+                        onClick={deleteSelection}>
+                        <Trash2 size={15} />{deleteLabel}
+                    </Button>
+                </div>
+            )}
             {edge ? (
                 <div className="space-y-2">
+                    <p className="break-words text-sm text-muted-foreground">{nodeLabel(edge.source)} → {nodeLabel(edge.target)}</p>
                     <Label htmlFor="edge-label">{t.properties.label}</Label>
                     <Input id="edge-label" value={String(edge.label ?? '')} placeholder={t.properties.edgeLabelPlaceholder}
                         onChange={(event) => state.updateEdgeLabel(edge.id, event.target.value)} />
@@ -72,7 +95,7 @@ export function PropertiesPanel({ close }: { close: () => void }) {
                         </>
                     )}
                 </div>
-            ) : <p className="text-sm text-muted-foreground">{t.editor.selectedHelp}</p>}
+            ) : count === 0 && <p className="text-sm text-muted-foreground">{t.editor.selectedHelp}</p>}
         </aside>
     );
 }

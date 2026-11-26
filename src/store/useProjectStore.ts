@@ -17,6 +17,7 @@ interface ProjectState extends ProjectData {
     onEdgesChange: OnEdgesChange;
     onConnect: OnConnect;
     addNode: (node: Node) => void;
+    deleteMapElements: (nodeIds: string[], edgeIds: string[]) => void;
     updateNodeData: (id: string, data: Node['data']) => void;
     updateRaci: (nodeId: string, roleType: RACIRole, roles: string[]) => void;
     updateEdgeLabel: (edgeId: string, label: string) => void;
@@ -77,13 +78,18 @@ export const useProjectStore = create<ProjectState>((set) => ({
         return { meta: { ...state.meta, roles }, raci };
     }),
 
-    onNodesChange: (changes) => set((state) => {
-        const nodes = applyNodeChanges(changes, state.nodes);
-        const removedIds = new Set(changes.filter((change) => change.type === 'remove').map((change) => change.id));
-        if (!removedIds.size) return { nodes };
-        const edges = state.edges.filter((edge) => !removedIds.has(edge.source) && !removedIds.has(edge.target));
-        const raci = Object.fromEntries(Object.entries(state.raci).filter(([id]) => !removedIds.has(id)));
-        return { nodes, edges, raci };
+    onNodesChange: (changes) => set((state) => ({ nodes: applyNodeChanges(changes, state.nodes) })),
+
+    deleteMapElements: (nodeIds, edgeIds) => set((state) => {
+        if (!nodeIds.length && !edgeIds.length) return state;
+        const removedNodes = new Set(nodeIds);
+        const removedEdges = new Set(edgeIds);
+        return {
+            nodes: state.nodes.filter((node) => !removedNodes.has(node.id)),
+            edges: state.edges.filter((edge) => !removedEdges.has(edge.id) &&
+                !removedNodes.has(edge.source) && !removedNodes.has(edge.target)),
+            raci: Object.fromEntries(Object.entries(state.raci).filter(([id]) => !removedNodes.has(id))),
+        };
     }),
 
     onEdgesChange: (changes) => set((state) => ({ edges: applyEdgeChanges(changes, state.edges) })),

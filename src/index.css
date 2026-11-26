@@ -107,3 +107,15 @@
 .react-flow__node .react-flow__handle.decision-handle-inactive {
   pointer-events: none;
 }
+
+.react-flow__edge .react-flow__edge-path {
+  stroke: #53677b;
+  stroke-width: 1.6;
+}
+
+.react-flow__edge.selected .react-flow__edge-path,
+.react-flow__edge:focus-visible .react-flow__edge-path {
+  filter: drop-shadow(0 0 2px hsl(var(--ring) / 0.45));
+  stroke: hsl(var(--primary));
+  stroke-width: 3;
+}

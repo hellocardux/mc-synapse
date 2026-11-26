@@ -27,7 +27,7 @@ export function Header({ openProject }: { openProject: (project: ProjectData) =>
         <header className="relative z-10 shrink-0 border-b bg-card">
             <div className="flex min-h-16 items-center gap-4 border-b border-border/70 px-4 lg:px-6">
                 <div className="flex shrink-0 items-center gap-2.5">
-                    <img src={import.meta.env.BASE_URL + 'favicon.png'} alt="" className="size-8 object-contain" />
+                    <img src={import.meta.env.BASE_URL + 'synapse-mark.svg'} alt="" className="size-8" />
                     <span className="text-base font-semibold tracking-tight">MC Synapse</span>
                 </div>
                 <div className="min-w-0 flex-1 border-l pl-3 lg:pl-4">

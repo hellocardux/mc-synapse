@@ -24,7 +24,6 @@ import { exportJson } from './lib/projectExports';
 const nodeTypes: NodeTypes = { task: TaskNode, decision: DecisionNode, 'start-end': StartEndNode };
 const defaultEdgeOptions: Partial<Edge> = {
     markerEnd: { type: MarkerType.ArrowClosed, color: '#53677b', width: 16, height: 16 },
-    style: { strokeWidth: 1.6, stroke: '#53677b' },
     labelBgPadding: [5, 3],
     labelBgBorderRadius: 4,
 };
@@ -35,6 +34,20 @@ function Diagram({ openProject }: { openProject: (project: ProjectData) => void 
     const reactFlow = useReactFlow();
     const canvas = useRef<HTMLDivElement>(null);
     const [showProperties, setShowProperties] = useState(true);
+    const [pendingDelete, setPendingDelete] = useState<{ nodes: { id: string }[]; edges: { id: string }[] }>();
+    const selectedNodes = state.nodes.filter((node) => node.selected);
+    const selectedEdges = state.edges.filter((edge) => edge.selected);
+    const selectedCount = selectedNodes.length + selectedEdges.length;
+    const hasMap = state.nodes.length > 0 || state.edges.length > 0;
+
+    function requestDelete() {
+        const selection = { nodes: selectedNodes, edges: selectedEdges };
+        if (selectedNodes.length || selectedCount > 1) {
+            setPendingDelete(selection);
+        } else if (selectedEdges.length) {
+            void reactFlow.deleteElements(selection).then(() => canvas.current?.focus());
+        }
+    }
 
     function addNode(type: ProcessNodeType, position?: XYPosition) {
         const names = { task: t.editor.activity, decision: t.editor.decision, 'start-end': t.editor.startEnd };
@@ -67,15 +80,28 @@ function Diagram({ openProject }: { openProject: (project: ProjectData) => void 
 
     return (
         <section className="flex h-full min-h-0 flex-col" aria-label={t.header.map}>
-            <MapToolbar add={addNode} showProperties={showProperties} toggleProperties={() => setShowProperties(!showProperties)} />
+            <MapToolbar
+                add={addNode}
+                showProperties={showProperties && hasMap}
+                toggleProperties={() => setShowProperties(!showProperties)}
+                hasMap={hasMap}
+                hasSelection={selectedCount > 0}
+                deleteSelection={requestDelete}
+            />
             <div className="flex min-h-0 flex-1">
-                <div className="relative min-w-0 flex-1 bg-slate-50" ref={canvas}>
+                <div className="relative min-w-0 flex-1 bg-slate-50 outline-none" ref={canvas} tabIndex={-1}>
                     <ReactFlow
                         nodes={state.nodes}
                         edges={state.edges}
                         onNodesChange={state.onNodesChange}
                         onEdgesChange={state.onEdgesChange}
                         onConnect={state.onConnect}
+                        deleteKeyCode={pendingDelete ? null : ['Backspace', 'Delete']}
+                        onBeforeDelete={async ({ nodes, edges }) => {
+                            // Keep the diagram and the project draft consistent in a single update.
+                            state.deleteMapElements(nodes.map(({ id }) => id), edges.map(({ id }) => id));
+                            return false;
+                        }}
                         nodeTypes={nodeTypes}
                         defaultEdgeOptions={defaultEdgeOptions}
                         onDragOver={(event) => {
@@ -106,10 +132,35 @@ function Diagram({ openProject }: { openProject: (project: ProjectData) => void 
                         </div>
                     )}
                 </div>
-                {showProperties && (state.nodes.length > 0 || state.edges.length > 0) && (
-                    <PropertiesPanel key="properties" close={() => setShowProperties(false)} />
+                {showProperties && hasMap && (
+                    <PropertiesPanel
+                        selectedNodes={selectedNodes}
+                        selectedEdges={selectedEdges}
+                        close={() => setShowProperties(false)}
+                        deleteSelection={requestDelete}
+                    />
                 )}
             </div>
+            <Dialog open={Boolean(pendingDelete)} onOpenChange={(open) => { if (!open) setPendingDelete(undefined); }}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>
+                            {pendingDelete?.nodes.length === 1 && !pendingDelete.edges.length
+                                ? t.editor.deleteNodeTitle : t.editor.deleteTitle}
+                        </DialogTitle>
+                        <DialogDescription>
+                            {pendingDelete?.nodes.length ? t.editor.deleteWithNodes : t.editor.deleteOnlyEdges}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setPendingDelete(undefined)}>{t.editor.cancel}</Button>
+                        <Button variant="destructive" onClick={() => {
+                            if (pendingDelete) void reactFlow.deleteElements(pendingDelete).then(() => canvas.current?.focus());
+                            setPendingDelete(undefined);
+                        }}>{t.editor.deleteConfirm}</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </section>
     );
 }
