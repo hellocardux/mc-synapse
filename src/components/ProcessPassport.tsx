@@ -1,141 +1,61 @@
-import { useState } from 'react';
-import { Button } from './ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    DialogDescription,
-    DialogFooter,
-} from './ui/dialog';
+import { useProjectStore } from '../store/useProjectStore';
+import { useLanguageStore } from '../store/useLanguageStore';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
-import { useProjectStore } from '../store/useProjectStore';
-import { useLanguageStore } from '../store/useLanguageStore';
-import { BookMarked, Save } from 'lucide-react';
 
 export function ProcessPassport() {
-    const { meta, setProjectMeta } = useProjectStore();
     const { t } = useLanguageStore();
-    const [open, setOpen] = useState(false);
-
-    // Local state for editing
-    const [formData, setFormData] = useState({
-        owner: meta.owner || '',
-        purpose: meta.purpose || '',
-        triggers: meta.triggers || '',
-        outputs: meta.outputs || '',
-        kpis: meta.kpis || '',
-    });
-
-    const handleOpenChange = (isOpen: boolean) => {
-        if (isOpen) {
-            // Re-sync with store when opening, in case it changed elsewhere
-            setFormData({
-                owner: meta.owner || '',
-                purpose: meta.purpose || '',
-                triggers: meta.triggers || '',
-                outputs: meta.outputs || '',
-                kpis: meta.kpis || '',
-            });
-        }
-        setOpen(isOpen);
-    }
-
-    const handleChange = (field: string, value: string) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-    };
-
-    const handleSave = () => {
-        setProjectMeta(formData);
-        setOpen(false);
-    };
+    const meta = useProjectStore((state) => state.meta);
+    const setProjectMeta = useProjectStore((state) => state.setProjectMeta);
+    const fields = [
+        { key: 'purpose', label: t.passport.purpose, placeholder: t.passport.purposePlaceholder },
+        { key: 'triggers', label: t.passport.inputsLabel, placeholder: t.passport.inputsPlaceholder },
+        { key: 'outputs', label: t.passport.outputsLabel, placeholder: t.passport.outputsPlaceholder },
+        { key: 'kpis', label: t.passport.kpis, placeholder: t.editor.kpiExample },
+        { key: 'risks', label: t.editor.risks, placeholder: t.editor.riskExample },
+    ] as const;
 
     return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                    <BookMarked className="h-4 w-4" />
-                    {t.header.passport}
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle>{t.passport.title}</DialogTitle>
-                    <DialogDescription>
-                        {t.passport.description}
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-
-                    {/* Owner */}
-                    <div className="grid gap-2">
-                        <Label htmlFor="owner">{t.passport.owner}</Label>
-                        <Input
-                            id="owner"
-                            value={formData.owner}
-                            onChange={(e) => handleChange('owner', e.target.value)}
-                            placeholder={t.passport.ownerPlaceholder}
-                        />
-                    </div>
-
-                    {/* Purpose */}
-                    <div className="grid gap-2">
-                        <Label htmlFor="purpose">{t.passport.purpose}</Label>
-                        <Textarea
-                            id="purpose"
-                            value={formData.purpose}
-                            onChange={(e) => handleChange('purpose', e.target.value)}
-                            placeholder={t.passport.purposePlaceholder}
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        {/* Triggers */}
-                        <div className="grid gap-2">
-                            <Label htmlFor="triggers">{t.passport.inputsLabel}</Label>
-                            <Textarea
-                                id="triggers"
-                                placeholder={t.passport.inputsPlaceholder}
-                                className="min-h-[100px]"
-                                value={formData.triggers}
-                                onChange={(e) => handleChange('triggers', e.target.value)}
-                            />
-                        </div>
-
-                        {/* Outputs */}
-                        <div className="grid gap-2">
-                            <Label htmlFor="outputs">{t.passport.outputsLabel}</Label>
-                            <Textarea
-                                id="outputs"
-                                placeholder={t.passport.outputsPlaceholder}
-                                className="min-h-[100px]"
-                                value={formData.outputs}
-                                onChange={(e) => handleChange('outputs', e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    {/* KPIs */}
-                    <div className="grid gap-2">
-                        <Label htmlFor="kpis">{t.passport.kpisLabel}</Label>
-                        <Textarea
-                            id="kpis"
-                            placeholder={t.passport.kpisPlaceholder}
-                            value={formData.kpis}
-                            onChange={(e) => handleChange('kpis', e.target.value)}
-                        />
-                    </div>
+        <section className="mx-auto max-w-5xl px-6 py-9 lg:px-10">
+            <h1 className="text-3xl font-semibold tracking-tight">{t.editor.passport}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t.passport.description}</p>
+            <div className="mt-7 grid gap-x-7 gap-y-6 rounded-xl border bg-card p-6 shadow-sm lg:grid-cols-2 lg:p-8">
+                <div className="space-y-2">
+                    <Label htmlFor="passport-owner">{t.passport.owner}</Label>
+                    <Input
+                        id="passport-owner"
+                        aria-describedby="passport-owner-help"
+                        value={meta.owner ?? ''}
+                        onChange={(event) => setProjectMeta({ owner: event.target.value })}
+                        placeholder={t.passport.ownerPlaceholder}
+                    />
+                    <p id="passport-owner-help" className="text-xs text-muted-foreground">{t.editor.ownerHelp}</p>
                 </div>
-                <DialogFooter>
-                    <Button onClick={handleSave}>
-                        <Save className="mr-2 h-4 w-4" />
-                        Save Passport
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                {fields.map(({ key, label, placeholder }) => (
+                    <div key={key} className="space-y-2">
+                        <Label htmlFor={key}>{label}</Label>
+                        <Textarea
+                            id={key}
+                            value={meta[key] ?? ''}
+                            placeholder={placeholder}
+                            onChange={(event) => setProjectMeta({ [key]: event.target.value })}
+                        />
+                    </div>
+                ))}
+                {meta.legacyKpisAndRisks !== undefined && (
+                    <div className="space-y-2 border-t pt-4 lg:col-span-2">
+                        <Label htmlFor="legacy-kpis">{t.editor.legacyKpisAndRisks}</Label>
+                        <p id="legacy-kpis-help" className="text-sm text-muted-foreground">{t.editor.legacyHelp}</p>
+                        <Textarea
+                            id="legacy-kpis"
+                            aria-describedby="legacy-kpis-help"
+                            value={meta.legacyKpisAndRisks}
+                            onChange={(event) => setProjectMeta({ legacyKpisAndRisks: event.target.value })}
+                        />
+                    </div>
+                )}
+            </div>
+        </section>
     );
 }

@@ -1,9 +1,11 @@
 import { create } from 'zustand';
+import { englishEditor, italianEditor } from './editorCopy';
 
 type Language = 'en' | 'it';
 
 // English Dictionary
 const en = {
+    editor: englishEditor,
     header: {
         map: "Map",
         sipoc: "SIPOC",
@@ -101,11 +103,11 @@ const en = {
         section5_desc: "Enrich the map by marking critical points. Select a node and toggle flags:",
         section6: "6. Technical Guide & Data Management",
         section6_desc: "This application runs entirely in your browser (Local-First). No data is sent to any server.",
-        tech_note1: "Local Storage: If you refresh the page, unsaved changes will be lost. Save your work frequently using the 'Save JSON' button.",
-        tech_note2: "Save JSON: Downloads a file (.json) containing your diagram and data. Use 'Load JSON' to restore it later.",
-        tech_note3: "RACI XLSX: Downloads an Excel file with the Responsibility Matrix (Role vs Activity).",
-        tech_note4: "Process Book: Generates a complete PDF report including the Passport, Map, and RACI Matrix.",
-        tech_note5: "Process Map: Exports only the diagram image (PNG/PDF).",
+        tech_note1: "A draft is saved in this browser and restored when you return.",
+        tech_note2: "Export an editable project (.json) to make a separate copy. Use Open to restore it.",
+        tech_note3: "RACI matrix (.xlsx) downloads an Excel file with the roles assigned to each activity.",
+        tech_note4: "Process Book (.pdf) includes the passport, SIPOC, map, and RACI matrix.",
+        tech_note5: "Exports are generated on your device.",
     },
     common: {
         invalidFileStructure: "Invalid project file structure",
@@ -143,6 +145,7 @@ const en = {
 
 // Italian Dictionary
 const it: typeof en = {
+    editor: italianEditor,
     header: {
         map: "Mappa",
         sipoc: "SIPOC",
@@ -239,11 +242,11 @@ const it: typeof en = {
         section5_desc: "Arricchisci la mappa segnando i punti critici. Seleziona un nodo e attiva i flag:",
         section6: "6. Guida Tecnica & Gestione Dati",
         section6_desc: "Questa applicazione gira interamente nel tuo browser (Local-First). Nessun dato viene inviato a server esterni.",
-        tech_note1: "Salvataggio Locale: Se ricarichi la pagina, i dati non salvati andranno persi. Salva frequentemente con il tasto 'Salva JSON'.",
-        tech_note2: "Salva JSON: Scarica un file (.json) con il diagramma e tutti i dati. Usa 'Carica JSON' per ripristinarlo.",
-        tech_note3: "RACI XLSX: Scarica un file Excel con la Matrice delle Responsabilità (Ruoli vs Attività).",
-        tech_note4: "Process Book: Genera un report PDF completo che include Passaporto, Mappa e Matrice RACI.",
-        tech_note5: "Mappa del Processo: Esporta solo l'immagine del diagramma (PNG/PDF).",
+        tech_note1: "La bozza viene salvata in questo browser e ripristinata quando torni.",
+        tech_note2: "Esporta un progetto modificabile (.json) per farne una copia. Usa Apri per riprenderlo.",
+        tech_note3: "Matrice RACI (.xlsx) scarica un file Excel con i ruoli assegnati a ogni attività.",
+        tech_note4: "Process Book (.pdf) contiene Passaporto, SIPOC, mappa e matrice RACI.",
+        tech_note5: "I file vengono generati sul tuo dispositivo.",
     },
     common: {
         invalidFileStructure: "Struttura file non valida",
@@ -288,8 +291,8 @@ interface LanguageState {
 export const useLanguageStore = create<LanguageState>((set) => ({
     language: 'it', // Defaulting to Italian
     t: it,
-    setLanguage: (lang) => set({
-        language: lang,
-        t: lang === 'en' ? en : it
-    }),
+    setLanguage: (lang) => {
+        document.documentElement.lang = lang;
+        set({ language: lang, t: lang === 'en' ? en : it });
+    },
 }));
